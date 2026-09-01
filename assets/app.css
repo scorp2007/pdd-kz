@@ -1119,12 +1119,18 @@ table.spdt{
 /* ============ инфографика в начале темы ============ */
 .infofig{
   margin:0 0 22px;padding:0;border:1px solid var(--border);border-radius:16px;
-  overflow:hidden;background:var(--surface2);max-width:680px;
+  overflow:hidden;background:var(--surface2);
 }
 .infofig img{width:100%;height:auto;display:block}
 .infofig figcaption{
   font-size:12.4px;line-height:1.5;color:var(--text2);
   padding:10px 14px;border-top:1px solid var(--border);background:var(--surface);
+}
+@media (max-width:700px){
+  /* на телефоне мелкий текст не прочесть — даём картинке высоту и прокрутку вбок */
+  .infofig{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .infofig img{width:auto;max-width:none;height:56vh;min-height:300px}
+  .infofig figcaption{position:sticky;left:0}
 }
 
 /* ============ только для статического сайта ============ */
