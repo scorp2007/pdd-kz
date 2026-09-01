@@ -1,5 +1,6 @@
 /* ============ tokens ============ */
 :root{
+  color-scheme:light;
   --bg:#f4f6f9;
   --bg2:#eaeef4;
   --surface:#ffffff;
@@ -33,6 +34,7 @@
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
+    color-scheme:dark;
     --bg:#0c1016; --bg2:#11161f; --surface:#141a23; --surface2:#1a212c;
     --text:#e8ecf2; --text2:#c2cad6; --muted:#8b98a9;
     --border:#232b38; --border2:#313c4d;
@@ -48,6 +50,7 @@
   }
 }
 :root[data-theme="dark"]{
+  color-scheme:dark;
   --bg:#0c1016; --bg2:#11161f; --surface:#141a23; --surface2:#1a212c;
   --text:#e8ecf2; --text2:#c2cad6; --muted:#8b98a9;
   --border:#232b38; --border2:#313c4d;
@@ -63,6 +66,7 @@
 }
 
 *{box-sizing:border-box}
+html{background:var(--bg)}
 body{
   margin:0;background:var(--bg);color:var(--text);
   font-family:var(--sans);font-size:var(--fs);line-height:1.65;
