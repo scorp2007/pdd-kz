@@ -18,6 +18,10 @@
   var svg = function (k) { return '<svg viewBox="0 0 24 24" aria-hidden="true">' + (ICON[k] || '') + '</svg>'; };
   var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]; }); };
 
+  /* стили загружены — снимаем страховочный фон из head, дальше правит таблица стилей */
+  document.documentElement.style.removeProperty('background-color');
+  document.documentElement.style.removeProperty('color-scheme');
+
   /* ---------- тема и размер текста ---------- */
   function isDark() {
     var t = document.documentElement.getAttribute('data-theme');
