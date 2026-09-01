@@ -1133,6 +1133,23 @@ table.spdt{
   .infofig figcaption{position:sticky;left:0}
 }
 
+/* ============ увеличение картинок по клику ============ */
+.zoomable{cursor:zoom-in}
+.imgzoom{
+  position:fixed;inset:0;z-index:300;overflow:auto;cursor:zoom-out;
+  padding:18px;background:rgba(6,10,18,.94);-webkit-overflow-scrolling:touch;
+  animation:izfade .16s ease-out;
+}
+@keyframes izfade{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.imgzoom{animation:none}}
+.imgzoom .izin{min-width:100%;min-height:100%;display:flex;align-items:center;justify-content:center}
+.imgzoom img{max-width:none;display:block;border-radius:10px;box-shadow:0 24px 70px rgba(0,0,0,.55)}
+.imgzoom .izhint{
+  position:fixed;left:50%;bottom:16px;transform:translateX(-50%);pointer-events:none;
+  font-size:12px;letter-spacing:.01em;color:#d7dfec;background:rgba(12,18,30,.86);
+  border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:6px 14px;white-space:nowrap;
+}
+
 /* ============ только для статического сайта ============ */
 
 /* переключатели «Подсветка» и «Термины» без перерисовки */

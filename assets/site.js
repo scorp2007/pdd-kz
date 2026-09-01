@@ -205,9 +205,37 @@
     apply();
   }
 
+  /* ---------- увеличение картинок ---------- */
+  var ZOOMSEL = '.infofig img, .roadfig img, .inlinefigs img, .bigfig img, .cheatfigs img, .signpage .plate img';
+  function markZoomable() {
+    $$(ZOOMSEL).forEach(function (im) {
+      var check = function () { im.classList.toggle('zoomable', im.naturalWidth > im.clientWidth + 4); };
+      if (im.complete && im.naturalWidth) check();
+      else im.addEventListener('load', check, { once: true });
+    });
+  }
+  function openZoom(im) {
+    closeZoom();
+    var d = document.createElement('div');
+    d.className = 'imgzoom'; d.id = 'imgzoom';
+    d.innerHTML = '<div class="izin"><img src="' + (im.currentSrc || im.src) + '" alt="' + esc(im.alt || '') + '"></div>' +
+      '<div class="izhint">Нажмите ещё раз, чтобы закрыть</div>';
+    document.body.appendChild(d);
+    document.body.style.overflow = 'hidden';
+  }
+  function closeZoom() {
+    var z = $('#imgzoom');
+    if (!z) return false;
+    z.remove(); document.body.style.overflow = '';
+    return true;
+  }
+
   /* ---------- события ---------- */
   document.addEventListener('click', function (e) {
     var t = e.target;
+    if (closeZoom()) { e.preventDefault(); return; }
+    var zi = t.closest && t.closest(ZOOMSEL);
+    if (zi && zi.classList.contains('zoomable')) { e.preventDefault(); openZoom(zi); return; }
     if (!t.closest('.searchwrap')) hideSuggest();
 
     var tr = t.closest('[data-tree]');
@@ -264,7 +292,7 @@
       var q = $('#q'); if (q) { e.preventDefault(); q.focus(); q.select(); }
       return;
     }
-    if (e.key === 'Escape') { hideSuggest(); return; }
+    if (e.key === 'Escape') { if (closeZoom()) return; hideSuggest(); return; }
     if (e.target.id === 'q') {
       var box = $('#suggest');
       var items = box ? $$('.sgitem', box) : [];
@@ -287,7 +315,7 @@
   });
 
   /* ---------- старт ---------- */
-  applyTheme(); applyFs(); applyView(); applyRead(); initMrp();
+  applyTheme(); applyFs(); applyView(); applyRead(); initMrp(); markZoomable();
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
 
   if ($('#signq')) filterSigns();
