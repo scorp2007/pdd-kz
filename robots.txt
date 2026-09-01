@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://scorp2007.github.io/pdd-kz/sitemap.xml

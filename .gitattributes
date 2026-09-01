@@ -1,1 +1,5 @@
-index.html -text
+*.html -text
+*.json -text
+*.css -text
+*.js -text
+*.webp binary
