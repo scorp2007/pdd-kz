@@ -1116,6 +1116,17 @@ table.spdt{
   padding:10px 14px;border-top:1px solid var(--border);background:var(--surface);
 }
 
+/* ============ инфографика в начале темы ============ */
+.infofig{
+  margin:0 0 22px;padding:0;border:1px solid var(--border);border-radius:16px;
+  overflow:hidden;background:var(--surface2);max-width:680px;
+}
+.infofig img{width:100%;height:auto;display:block}
+.infofig figcaption{
+  font-size:12.4px;line-height:1.5;color:var(--text2);
+  padding:10px 14px;border-top:1px solid var(--border);background:var(--surface);
+}
+
 /* ============ только для статического сайта ============ */
 
 /* переключатели «Подсветка» и «Термины» без перерисовки */
