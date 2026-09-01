@@ -1163,7 +1163,8 @@ table.spdt{
 
 /* каталог знаков — не считаем и не рисуем то, чего не видно на экране */
 .signgrid{content-visibility:auto;contain-intrinsic-size:auto 420px}
-.rule4 .thumbs{content-visibility:auto;contain-intrinsic-size:auto 260px}
+.rex{content-visibility:auto;contain-intrinsic-size:auto 240px}
+.rcard{contain-intrinsic-size:auto 420px}
 
 /* ============ только для статического сайта ============ */
 
