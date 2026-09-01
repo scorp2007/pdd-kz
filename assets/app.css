@@ -1154,6 +1154,17 @@ table.spdt{
   border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:6px 14px;white-space:nowrap;
 }
 
+/* ============ переход между страницами без разрыва ============ */
+@view-transition{navigation:auto}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.16s}
+@media (prefers-reduced-motion:reduce){
+  ::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none !important}
+}
+
+/* каталог знаков — не считаем и не рисуем то, чего не видно на экране */
+.signgrid{content-visibility:auto;contain-intrinsic-size:auto 420px}
+.rule4 .thumbs{content-visibility:auto;contain-intrinsic-size:auto 260px}
+
 /* ============ только для статического сайта ============ */
 
 /* переключатели «Подсветка» и «Термины» без перерисовки */
