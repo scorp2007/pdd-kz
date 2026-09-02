@@ -1184,6 +1184,66 @@ table.spdt{
 @media (prefers-reduced-motion:reduce){.signtip{transition:none}}
 @media (hover:none){.signtip{display:none}}
 
+/* ============ дорожная разметка ============ */
+.mkbar{
+  border:1px solid var(--border);border-radius:16px;background:var(--surface);
+  padding:15px 16px 17px;margin-bottom:20px;
+}
+.mkbarcap{
+  font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:10px;
+}
+.mkgrid{display:flex;flex-wrap:wrap;gap:8px}
+.mkchip{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:5px 5px 4px;border-radius:11px;border:1px solid var(--border);
+  background:var(--surface2);transition:.12s;text-decoration:none;
+}
+.mkchip:hover{border-color:var(--accent);background:var(--accent-bg)}
+.mkfig{width:40px;height:40px;display:block;border-radius:7px}
+.mkchip .mkc{font-family:var(--mono);font-size:10.5px;font-weight:700;color:var(--text2)}
+.mkchip:hover .mkc{color:var(--accent)}
+
+.mklist{display:grid;gap:11px;margin-top:22px}
+.mkitem{
+  display:flex;gap:15px;align-items:flex-start;scroll-margin-top:90px;
+  padding:14px 16px;border:1px solid var(--border);border-radius:14px;background:var(--surface);
+}
+.mkpic{flex-shrink:0}
+.mkpic .mkfig{width:72px;height:72px;border-radius:9px}
+.mktx{min-width:0}
+.mkhead{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:6px}
+.mkcode{
+  font-family:var(--mono);font-size:12.5px;font-weight:700;color:var(--accent);
+  background:var(--accent-bg);border-radius:6px;padding:1px 7px;
+}
+.mkhead b{font-family:var(--display);font-size:15px;font-weight:700;letter-spacing:-.01em}
+.mkverd{
+  font-size:11px;font-weight:700;letter-spacing:.02em;border-radius:999px;padding:2px 9px;
+  border:1px solid transparent;
+}
+.mkverd.v-no{color:var(--ban);background:var(--ban-bg);border-color:color-mix(in srgb,var(--ban) 30%,transparent)}
+.mkverd.v-yes{color:var(--ok);background:var(--ok-bg);border-color:color-mix(in srgb,var(--ok) 30%,transparent)}
+.mkverd.v-if{color:var(--must);background:var(--must-bg);border-color:color-mix(in srgb,var(--must) 30%,transparent)}
+.mkverd.v-info{color:var(--text2);background:var(--surface2);border-color:var(--border)}
+.mkitem p{margin:0;font-size:13.8px;line-height:1.55;color:var(--text2)}
+.mkitem p.mkx{margin-top:6px;color:var(--text);font-size:13.4px}
+.mkitem:target{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg)}
+@media (max-width:640px){
+  .mkitem{gap:12px;padding:12px 13px}
+  .mkpic .mkfig{width:58px;height:58px}
+}
+/* панель наведения для разметки */
+.signtip svg.mkfig{width:78px;height:78px;border-radius:10px}
+
+.ovload{color:var(--muted);font-size:14px;padding:26px 4px;text-align:center}
+.overlay .signpage .modal-h{padding-top:4px}
+.overlay .signpage .modal-h h1{
+  font-family:var(--display);font-size:22px;font-weight:750;letter-spacing:-.02em;
+  margin:4px 0 8px;line-height:1.2;
+}
+.overlay .relsigns{margin-top:20px}
+
 /* ============ только для статического сайта ============ */
 
 /* переключатели «Подсветка» и «Термины» без перерисовки */

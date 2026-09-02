@@ -13,7 +13,8 @@
     moon: '<path d="M21 13.5A9 9 0 0 1 10.5 3a9 9 0 1 0 10.5 10.5Z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/>',
     sign: '<path d="M12 2 22 12 12 22 2 12 12 2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>',
     book: '<path d="M4 4h7a3 3 0 0 1 3 3v13a2.5 2.5 0 0 0-2.5-2.5H4V4Zm16 0h-6a3 3 0 0 0-3 3v13a2.5 2.5 0 0 1 2.5-2.5H20V4Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>',
-    az: '<path d="M3 17 6.5 7 10 17M4.2 14h4.6M14 7h6l-6 10h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>'
+    az: '<path d="M3 17 6.5 7 10 17M4.2 14h4.6M14 7h6l-6 10h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>',
+    x: '<path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>'
   };
   var svg = function (k) { return '<svg viewBox="0 0 24 24" aria-hidden="true">' + (ICON[k] || '') + '</svg>'; };
   var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]; }); };
@@ -235,19 +236,28 @@
   }
 
   /* ---------- панель знака при наведении ---------- */
-  var TIPSEL = '.rex img, .blk-ref .thumbs img';
+  var TIPSEL = '.rex img, .blk-ref .thumbs img, .mkchip';
   var tipBox = null, tipFor = null;
-  function showTip(im) {
-    if (tipFor === im) return;
-    var alt = im.getAttribute('alt') || '';
-    var sp = alt.indexOf(' ');
-    if (sp < 0) return;
+  function showTip(el) {
+    if (tipFor === el) return;
+    var pic, code, name;
+    if (el.tagName === 'IMG') {
+      var alt = el.getAttribute('alt') || '';
+      var sp = alt.indexOf(' ');
+      if (sp < 0) return;
+      pic = '<img src="' + (el.currentSrc || el.src) + '" alt="">';
+      code = alt.slice(0, sp); name = alt.slice(sp + 1);
+    } else {
+      var g = el.querySelector('svg');
+      if (!g) return;
+      pic = g.outerHTML;
+      code = el.getAttribute('data-code') || ''; name = el.getAttribute('data-name') || '';
+    }
     if (!tipBox) { tipBox = document.createElement('div'); tipBox.className = 'signtip'; document.body.appendChild(tipBox); }
-    tipFor = im;
-    tipBox.innerHTML = '<img src="' + (im.currentSrc || im.src) + '" alt=""><div><div class="tc">' +
-      alt.slice(0, sp).replace(/[&<>"]/g, '') + '</div><div class="tn">' +
-      alt.slice(sp + 1).replace(/[&<>]/g, '') + '</div></div>';
-    var r = im.getBoundingClientRect();
+    tipFor = el;
+    tipBox.innerHTML = pic + '<div><div class="tc">' + code.replace(/[&<>"]/g, '') +
+      '</div><div class="tn">' + name.replace(/[&<>]/g, '') + '</div></div>';
+    var r = el.getBoundingClientRect();
     tipBox.style.left = '0px'; tipBox.style.top = '0px';
     var w = tipBox.offsetWidth, h = tipBox.offsetHeight;
     var x = r.left + r.width / 2 - w / 2;
@@ -266,13 +276,64 @@
   document.addEventListener('mouseover', function (e) {
     var im = e.target.closest && e.target.closest(TIPSEL);
     if (im) showTip(im); else if (tipFor) hideTip();
+    var pa = e.target.closest && e.target.closest('a[href]');
+    if (pa && isSignHref(pa.getAttribute('href'))) fetchSign(pa.getAttribute('href'));
   });
   document.addEventListener('mouseleave', hideTip, true);
   window.addEventListener('scroll', hideTip, true);
   window.addEventListener('blur', hideTip);
+  /* ---------- знак открывается панелью поверх страницы ---------- */
+  var SIGNBASE = BASE + 'dorozhnye-znaki/';
+  var signCache = {}, ovPushed = false;
+  function isSignHref(h) { return h && h.indexOf(SIGNBASE) === 0 && h !== SIGNBASE; }
+  function fetchSign(href) {
+    if (signCache[href]) return Promise.resolve(signCache[href]);
+    return fetch(href).then(function (r) { return r.text(); }).then(function (t) {
+      var d = new DOMParser().parseFromString(t, 'text/html');
+      var el = d.querySelector('.signpage');
+      signCache[href] = el ? { html: el.innerHTML, title: d.title } : null;
+      return signCache[href];
+    }).catch(function () { return null; });
+  }
+  function closeOverlay(back) {
+    var o = $("#ov"); if (!o) return false;
+    o.remove(); document.body.style.overflow = "";
+    if (back && ovPushed) { ovPushed = false; history.back(); }
+    ovPushed = false;
+    return true;
+  }
+  function openSignOverlay(href) {
+    hideTip();
+    var already = !!$("#ov"), wasPushed = ovPushed;
+    if (already) { $("#ov").remove(); }
+    var d = document.createElement("div");
+    d.className = "overlay"; d.id = "ov";
+    d.innerHTML = "<div class=\"modal\" style=\"position:relative\"><button class=\"iconbtn modal-x\" id=\"ovx\" aria-label=\"Закрыть\">" + svg("x") + "</button><div class=\"modal-b ovload\">Загружаем…</div></div>";
+    document.body.appendChild(d);
+    document.body.style.overflow = "hidden";
+    try {
+      if (already && wasPushed) { history.replaceState({ ov: href }, "", href); ovPushed = true; }
+      else { history.pushState({ ov: href }, "", href); ovPushed = true; }
+    } catch (e) { }
+    fetchSign(href).then(function (r) {
+      var box = $("#ov"); if (!box) return;
+      if (!r) { location.href = href; return; }
+      box.querySelector(".modal").innerHTML =
+        "<button class=\"iconbtn modal-x\" id=\"ovx\" aria-label=\"Закрыть\">" + svg("x") + "</button>" + r.html;
+      markZoomable();
+      box.querySelector(".modal").scrollTop = 0;
+    });
+  }
+  window.addEventListener('popstate', function () { closeOverlay(false); });
   /* ---------- события ---------- */
   document.addEventListener('click', function (e) {
     var t = e.target;
+    if (t.closest('#ovx')) { e.preventDefault(); closeOverlay(true); return; }
+    if (t.id === 'ov') { e.preventDefault(); closeOverlay(true); return; }
+    var sa = t.closest && t.closest('a[href]');
+    if (sa && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey && e.button === 0 && isSignHref(sa.getAttribute('href'))) {
+      e.preventDefault(); openSignOverlay(sa.getAttribute('href')); return;
+    }
     if (closeZoom()) { e.preventDefault(); return; }
     var zi = t.closest && t.closest(ZOOMSEL);
     if (zi && zi.classList.contains('zoomable')) { e.preventDefault(); openZoom(zi); return; }
@@ -332,7 +393,7 @@
       var q = $('#q'); if (q) { e.preventDefault(); q.focus(); q.select(); }
       return;
     }
-    if (e.key === 'Escape') { if (closeZoom()) return; hideSuggest(); return; }
+    if (e.key === 'Escape') { if (closeZoom()) return; if (closeOverlay(true)) return; hideSuggest(); return; }
     if (e.target.id === 'q') {
       var box = $('#suggest');
       var items = box ? $$('.sgitem', box) : [];
