@@ -1252,6 +1252,10 @@ table.spdt{
 .blk-ref .thumbs .mkchip.mini .mkfig{width:38px;height:38px;border-radius:6px}
 .blk-ref .thumbs .mkchip.mini:hover .mkfig{outline:2px solid var(--accent)}
 
+.spdt td .sref-m,.spd li .sref-m{margin:1px 2px 1px 0}
+
+.overlay .mkitem.plain .mkhead{padding-right:34px}
+
 /* ============ только для статического сайта ============ */
 
 /* переключатели «Подсветка» и «Термины» без перерисовки */

@@ -278,7 +278,7 @@
     if (im) showTip(im); else if (tipFor) hideTip();
     var pa = e.target.closest && e.target.closest('a[href]');
     if (pa && isSignHref(pa.getAttribute('href'))) fetchSign(pa.getAttribute('href'));
-    if (e.target.closest && e.target.closest('.sref-m')) loadMarks();
+    if (e.target.closest && e.target.closest('.sref-m, .mkchip')) loadMarks();
   });
   document.addEventListener('mouseleave', hideTip, true);
   window.addEventListener('scroll', hideTip, true);
@@ -328,7 +328,15 @@
   window.addEventListener('popstate', function () { closeOverlay(false); });
   /* ---------- разметка тоже открывается панелью ---------- */
   var markPage = null, markCards = {};
+  function localMarks() {
+    var found = false;
+    [].forEach.call(document.querySelectorAll('.mkitem[id^="m-"]'), function (el) {
+      markCards[el.id.replace(/^m-/, '')] = el.innerHTML; found = true;
+    });
+    return found;
+  }
   function loadMarks() {
+    if (localMarks()) return Promise.resolve(markCards);
     if (markPage) return markPage;
     markPage = fetch(BASE + 'prosto/razmetka-dorogi/').then(function (r) { return r.text(); }).then(function (t) {
       var d = new DOMParser().parseFromString(t, 'text/html');
@@ -341,8 +349,7 @@
   }
   function openMarkOverlay(code) {
     hideTip();
-    var here = document.getElementById('m-' + code);
-    if (here) { here.scrollIntoView({ block: 'center' }); location.hash = 'm-' + code; return; }
+    if (document.getElementById('m-' + code)) markCards['#local'] = 1;
     closeOverlay(false);
     var d = document.createElement('div');
     d.className = 'overlay'; d.id = 'ov';
@@ -365,9 +372,10 @@
     var t = e.target;
     if (t.closest('#ovx')) { e.preventDefault(); closeOverlay(true); return; }
     if (t.id === 'ov') { e.preventDefault(); closeOverlay(true); return; }
-    var mk = t.closest && t.closest('.sref-m');
+    var mk = t.closest && t.closest('.sref-m, .mkchip');
     if (mk && !e.metaKey && !e.ctrlKey && !e.shiftKey && e.button === 0) {
-      var mc = (mk.getAttribute('href') || '').split('#m-')[1];
+      var mc = mk.getAttribute('data-mark') || mk.getAttribute('data-code') ||
+        (mk.getAttribute('href') || '').split('#m-')[1];
       if (mc) { e.preventDefault(); openMarkOverlay(mc); return; }
     }
     var sa = t.closest && t.closest('a[href]');
