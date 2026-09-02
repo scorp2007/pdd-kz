@@ -236,7 +236,7 @@
   }
 
   /* ---------- панель знака при наведении ---------- */
-  var TIPSEL = '.rex img, .blk-ref .thumbs img, .mkchip';
+  var TIPSEL = '.rex img, .blk-ref .thumbs img, .mkchip, .sref-m';
   var tipBox = null, tipFor = null;
   function showTip(el) {
     if (tipFor === el) return;
@@ -278,6 +278,7 @@
     if (im) showTip(im); else if (tipFor) hideTip();
     var pa = e.target.closest && e.target.closest('a[href]');
     if (pa && isSignHref(pa.getAttribute('href'))) fetchSign(pa.getAttribute('href'));
+    if (e.target.closest && e.target.closest('.sref-m')) loadMarks();
   });
   document.addEventListener('mouseleave', hideTip, true);
   window.addEventListener('scroll', hideTip, true);
@@ -325,11 +326,50 @@
     });
   }
   window.addEventListener('popstate', function () { closeOverlay(false); });
+  /* ---------- разметка тоже открывается панелью ---------- */
+  var markPage = null, markCards = {};
+  function loadMarks() {
+    if (markPage) return markPage;
+    markPage = fetch(BASE + 'prosto/razmetka-dorogi/').then(function (r) { return r.text(); }).then(function (t) {
+      var d = new DOMParser().parseFromString(t, 'text/html');
+      [].forEach.call(d.querySelectorAll('.mkitem'), function (el) {
+        markCards[el.id.replace(/^m-/, '')] = el.innerHTML;
+      });
+      return markCards;
+    }).catch(function () { return markCards; });
+    return markPage;
+  }
+  function openMarkOverlay(code) {
+    hideTip();
+    var here = document.getElementById('m-' + code);
+    if (here) { here.scrollIntoView({ block: 'center' }); location.hash = 'm-' + code; return; }
+    closeOverlay(false);
+    var d = document.createElement('div');
+    d.className = 'overlay'; d.id = 'ov';
+    d.innerHTML = '<div class="modal" style="position:relative;max-width:560px">' +
+      '<button class="iconbtn modal-x" id="ovx" aria-label="Закрыть">' + svg('x') + '</button>' +
+      '<div class="modal-b ovload">Загружаем…</div></div>';
+    document.body.appendChild(d);
+    document.body.style.overflow = 'hidden';
+    loadMarks().then(function (cards) {
+      var box = $('#ov'); if (!box) return;
+      if (!cards[code]) { location.href = BASE + 'prosto/razmetka-dorogi/#m-' + code; return; }
+      box.querySelector('.modal').innerHTML =
+        '<button class="iconbtn modal-x" id="ovx" aria-label="Закрыть">' + svg('x') + '</button>' +
+        '<div class="modal-b"><div class="mkitem plain">' + cards[code] + '</div>' +
+        '<a class="tocard" style="margin-top:16px" href="' + BASE + 'prosto/razmetka-dorogi/">' + svg('book') + 'Вся разметка одним списком</a></div>';
+    });
+  }
   /* ---------- события ---------- */
   document.addEventListener('click', function (e) {
     var t = e.target;
     if (t.closest('#ovx')) { e.preventDefault(); closeOverlay(true); return; }
     if (t.id === 'ov') { e.preventDefault(); closeOverlay(true); return; }
+    var mk = t.closest && t.closest('.sref-m');
+    if (mk && !e.metaKey && !e.ctrlKey && !e.shiftKey && e.button === 0) {
+      var mc = (mk.getAttribute('href') || '').split('#m-')[1];
+      if (mc) { e.preventDefault(); openMarkOverlay(mc); return; }
+    }
     var sa = t.closest && t.closest('a[href]');
     if (sa && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey && e.button === 0 && isSignHref(sa.getAttribute('href'))) {
       e.preventDefault(); openSignOverlay(sa.getAttribute('href')); return;
