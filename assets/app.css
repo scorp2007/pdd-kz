@@ -560,7 +560,7 @@ mark{background:none;color:inherit}
   width:34px;height:34px;object-fit:contain;background:var(--plate);
   border-radius:7px;padding:2px;border:1px solid var(--border);cursor:pointer;transition:.12s;
 }
-.rex img:hover{transform:scale(1.35);border-color:var(--accent);position:relative;z-index:5;box-shadow:var(--shadow-lg)}
+.rex img:hover{border-color:var(--accent);background:var(--accent-bg);box-shadow:0 0 0 2px var(--accent-bg)}
 .exctoggle{
   display:flex;align-items:center;gap:7px;margin-top:12px;padding:7px 12px;border-radius:9px;
   font-size:12.5px;color:var(--muted);border:1px dashed var(--border2);background:none;transition:.15s;
@@ -1165,6 +1165,24 @@ table.spdt{
 .signgrid{content-visibility:auto;contain-intrinsic-size:auto 420px}
 .rex{content-visibility:auto;contain-intrinsic-size:auto 240px}
 .rcard{contain-intrinsic-size:auto 420px}
+
+/* ============ панель знака при наведении ============ */
+.signtip{
+  position:fixed;z-index:400;pointer-events:none;
+  display:flex;align-items:center;gap:11px;
+  padding:9px 14px 9px 9px;border-radius:14px;max-width:300px;
+  background:var(--surface);border:1px solid var(--border2);box-shadow:var(--shadow-lg);
+  opacity:0;transform:translateY(3px);transition:opacity .09s ease-out,transform .09s ease-out;
+}
+.signtip.on{opacity:1;transform:none}
+.signtip img{
+  width:78px;height:78px;flex-shrink:0;object-fit:contain;
+  background:var(--plate);border:1px solid var(--border);border-radius:10px;padding:5px;
+}
+.signtip .tc{font-family:var(--mono);font-size:12.5px;font-weight:700;color:var(--accent)}
+.signtip .tn{font-size:13.2px;line-height:1.35;color:var(--text);margin-top:3px}
+@media (prefers-reduced-motion:reduce){.signtip{transition:none}}
+@media (hover:none){.signtip{display:none}}
 
 /* ============ только для статического сайта ============ */
 

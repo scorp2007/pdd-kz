@@ -234,6 +234,42 @@
     return true;
   }
 
+  /* ---------- панель знака при наведении ---------- */
+  var TIPSEL = '.rex img, .blk-ref .thumbs img';
+  var tipBox = null, tipFor = null;
+  function showTip(im) {
+    if (tipFor === im) return;
+    var alt = im.getAttribute('alt') || '';
+    var sp = alt.indexOf(' ');
+    if (sp < 0) return;
+    if (!tipBox) { tipBox = document.createElement('div'); tipBox.className = 'signtip'; document.body.appendChild(tipBox); }
+    tipFor = im;
+    tipBox.innerHTML = '<img src="' + (im.currentSrc || im.src) + '" alt=""><div><div class="tc">' +
+      alt.slice(0, sp).replace(/[&<>"]/g, '') + '</div><div class="tn">' +
+      alt.slice(sp + 1).replace(/[&<>]/g, '') + '</div></div>';
+    var r = im.getBoundingClientRect();
+    tipBox.style.left = '0px'; tipBox.style.top = '0px';
+    var w = tipBox.offsetWidth, h = tipBox.offsetHeight;
+    var x = r.left + r.width / 2 - w / 2;
+    x = Math.max(8, Math.min(x, innerWidth - w - 8));
+    var y = r.top - h - 10;
+    if (y < 8) y = r.bottom + 10;
+    tipBox.style.left = Math.round(x) + 'px';
+    tipBox.style.top = Math.round(y) + 'px';
+    tipBox.classList.add('on');
+  }
+  function hideTip() {
+    if (!tipBox) return;
+    tipBox.classList.remove('on');
+    tipFor = null;
+  }
+  document.addEventListener('mouseover', function (e) {
+    var im = e.target.closest && e.target.closest(TIPSEL);
+    if (im) showTip(im); else if (tipFor) hideTip();
+  });
+  document.addEventListener('mouseleave', hideTip, true);
+  window.addEventListener('scroll', hideTip, true);
+  window.addEventListener('blur', hideTip);
   /* ---------- события ---------- */
   document.addEventListener('click', function (e) {
     var t = e.target;
